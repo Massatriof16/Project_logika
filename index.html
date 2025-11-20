@@ -1,89 +1,300 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulasi Sistem Keamanan Rumah</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Simulasi Sistem Keamanan Rumah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== style.css (inlined for simplicity) ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#333;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;transition:background .5s ease,color .5s ease}
+body.dark-mode{background:linear-gradient(135deg,#2c3e50 0%,#34495e 100%);color:#ecf0f1}
+.container{max-width:1400px;width:100%}
+header{text-align:center;margin-bottom:30px;color:white}
+header h1{font-size:2.2rem;font-weight:600;margin-bottom:6px}
+header p{font-size:1rem;font-weight:300}
+.dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:start}
+.status-ring{grid-column:span 2;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.08);backdrop-filter:blur(10px);border-radius:20px;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,.08);border:1px solid rgba(255,255,255,.12);transition:transform .3s ease}
+.status-ring:hover{transform:translateY(-5px)}
+.status-text{margin-top:12px;font-size:1.3rem;font-weight:600;color:white}
+#status-circle{transition:stroke-dashoffset .5s ease}
+.card{background:rgba(255,255,255,.06);backdrop-filter:blur(8px);border-radius:16px;padding:18px;box-shadow:0 8px 32px rgba(0,0,0,.08);border:1px solid rgba(255,255,255,.08);transition:transform .25s ease}
+.card h2{font-size:1.1rem;font-weight:600;margin-bottom:12px;color:white}
+.location-info p{margin-bottom:8px;color:rgba(255,255,255,.95)}
+button{background:#4CAF50;color:white;border:none;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:.95rem;margin:6px 4px;transition:background .2s ease}
+button:hover{background:#45a049}
+input[type=number]{padding:6px;border-radius:6px;border:1px solid #ccc;margin-left:8px;width:110px}
+.sensor-list{display:flex;flex-direction:column;gap:12px}
+.sensor-item{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px;border-radius:10px;transition:background .2s ease}
+.sensor-item:hover{background:rgba(255,255,255,.03)}
+.sensor-item input[type=checkbox]{margin-right:12px;transform:scale(1.1)}
+.sensor-status{padding:6px 12px;border-radius:20px;font-size:.85rem;font-weight:500;transition:all .2s ease}
+.sensor-status.safe{background:#4CAF50;color:white}
+.sensor-status.danger{background:#f44336;color:white}
+.notification-log ul{list-style:none;padding:0}
+.notification-log li{background:rgba(255,255,255,.03);padding:8px;margin:6px 0;border-radius:8px;color:rgba(255,255,255,.95)}
+#activity-log{list-style:none;padding:0;max-height:200px;overflow-y:auto}
+#activity-log li{background:rgba(255,255,255,.03);padding:8px;margin:6px 0;border-radius:8px;color:rgba(255,255,255,.95)}
+.info-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.small{font-size:.9rem;color:rgba(255,255,255,.9)}
+@media(max-width:768px){.status-ring{grid-column:span 1}.dashboard{grid-template-columns:1fr}header h1{font-size:1.6rem}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Simulasi Sistem Keamanan Rumah</h1>
-            <p>Berbasis Logika Proposisi + Geofencing GPS</p>
-        </header>
-        
-        <div class="dashboard">
-            <!-- Status Ring -->
-            <div class="status-ring">
-                <svg width="200" height="200">
-                    <circle cx="100" cy="100" r="90" stroke="#ddd" stroke-width="10" fill="none" />
-                    <circle cx="100" cy="100" r="90" stroke="#4CAF50" stroke-width="10" fill="none" stroke-dasharray="565" stroke-dashoffset="0" id="status-circle" />
-                </svg>
-                <div class="status-text" id="status-text">Aman</div>
-            </div>
-            
-            <!-- Panel Lokasi -->
-            <div class="card">
-                <h2>Lokasi & Geofencing</h2>
-                <div class="location-info">
-                    <p>Posisi Anda: <span id="user-lat">Memuat...</span>, <span id="user-lng">Memuat...</span></p>
-                    <p>Lokasi Rumah: <span id="home-lat">-</span>, <span id="home-lng">-</span></p>
-                    <p>Jarak: <span id="distance">-</span> meter</p>
-                    <button id="set-home-btn">Set Lokasi Rumah</button>
-                    <label>Radius Aman (meter): <input type="number" id="radius-input" min="50" max="100" value="50"></label>
-                    <button id="save-radius-btn">Simpan Radius</button>
-                </div>
-            </div>
-            
-            <!-- Panel Sensor -->
-            <div class="card">
-                <h2>Sensor Virtual</h2>
-                <div class="sensor-list">
-                    <label class="sensor-item">
-                        <input type="checkbox" id="P" onchange="updateSimulation()">
-                        <span>Pintu terkunci (P)</span>
-                        <span class="sensor-status" id="P-status">Tidak Aman</span>
-                    </label>
-                    <label class="sensor-item">
-                        <input type="checkbox" id="J" onchange="updateSimulation()">
-                        <span>Jendela tertutup (J)</span>
-                        <span class="sensor-status" id="J-status">Tidak Aman</span>
-                    </label>
-                    <label class="sensor-item">
-                        <input type="checkbox" id="S" onchange="updateSimulation()">
-                        <span>Tidak ada asap (S)</span>
-                        <span class="sensor-status" id="S-status">Tidak Aman</span>
-                    </label>
-                    <label class="sensor-item">
-                        <input type="checkbox" id="motion" onchange="updateSimulation()">
-                        <span>Sensor gerak (opsional)</span>
-                        <span class="sensor-status" id="motion-status">Tidak Aman</span>
-                    </label>
-                </div>
-            </div>
-            
-            <!-- Panel Notifikasi -->
-            <div class="card">
-                <h2>Notifikasi</h2>
-                <button id="request-notification-btn">Izinkan Notifikasi</button>
-                <div class="notification-log" id="notification-log">
-                    <p>Log Notifikasi:</p>
-                    <ul id="log-list"></ul>
-                </div>
-            </div>
-            
-            <!-- Log Aktivitas -->
-            <div class="card">
-                <h2>Log Aktivitas</h2>
-                <ul id="activity-log"></ul>
-            </div>
-        </div>
-    </div>
-    
-    <script src="logic.js"></script>
-</body>
+<div class="container">
+<header>
+<h1>Simulasi Sistem Keamanan Rumah</h1>
+<p>Berbasis Logika Proposisi + Geofencing GPS</p>
+</header><div class="dashboard">
+<div class="status-ring card">
+<svg width="150" height="150" viewBox="0 0 200 200">
+<circle cx="100" cy="100" r="80" stroke="rgba(255,255,255,0.12)" stroke-width="12" fill="none"></circle>
+<circle cx="100" cy="100" r="80" stroke="#4CAF50" stroke-width="12" fill="none" stroke-dasharray="502" stroke-dashoffset="0" id="status-circle"></circle>
+</svg>
+<div class="status-text" id="status-text">Memuat...</div>
+<p class="small" id="status-detail"></p>
+</div><div class="card">
+<h2>Lokasi & Geofencing</h2>
+<div class="location-info">
+<p>Posisi Anda: <span id="user-lat">-</span>, <span id="user-lng">-</span></p>
+<p>Lokasi Rumah: <span id="home-lat">-</span>, <span id="home-lng">-</span></p>
+<p>Jarak: <span id="distance">-</span> meter</p>
+<div class="info-row">
+<button id="set-home-btn">Set Lokasi Rumah</button>
+<button id="clear-home-btn">Hapus Lokasi</button>
+<label class="small">Radius Aman (m): <input type="number" id="radius-input" min="30" max="500" value="80"></label>
+<button id="save-radius-btn">Simpan Radius</button>
+</div>
+<p class="small">Catatan: Notifikasi hanya berfungsi pada <strong>https</strong> atau <strong>localhost</strong>.</p>
+</div>
+</div><div class="card">
+<h2>Sensor Virtual</h2>
+<div class="sensor-list">
+<label class="sensor-item"><div><input type="checkbox" id="P"> <span>Pintu terkunci (P)</span></div> <span class="sensor-status danger" id="P-status">Tidak Aman</span></label>
+<label class="sensor-item"><div><input type="checkbox" id="J"> <span>Jendela tertutup (J)</span></div> <span class="sensor-status danger" id="J-status">Tidak Aman</span></label>
+<label class="sensor-item"><div><input type="checkbox" id="S"> <span>Tidak ada asap (S)</span></div> <span class="sensor-status danger" id="S-status">Tidak Aman</span></label>
+<label class="sensor-item"><div><input type="checkbox" id="motion"> <span>Sensor gerak (opsional)</span></div> <span class="sensor-status danger" id="motion-status">Tidak Aman</span></label>
+</div>
+</div><div class="card">
+<h2>Notifikasi</h2>
+<div class="info-row">
+<button id="request-notification-btn">Izinkan Notifikasi</button>
+<button id="test-notification-btn">Tes Notifikasi</button>
+</div>
+<div class="notification-log">
+<p>Log Notifikasi:</p>
+<ul id="log-list"></ul>
+</div>
+</div><div class="card">
+<h2>Log Aktivitas</h2>
+<ul id="activity-log"></ul>
+</div></div>
+</div><script>
+// ===== logic.js (inlined & fixed) =====
+let homeLocation = null;
+let radius = 80;
+let activityLog = [];
+let watchId = null;
+let lastNotifTimestamps = {}; // simple rate-limit per message
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371e3;
+  const φ1 = lat1 * Math.PI/180;
+  const φ2 = lat2 * Math.PI/180;
+  const Δφ = (lat2 - lat1) * Math.PI/180;
+  const Δλ = (lon2 - lon1) * Math.PI/180;
+  const a = Math.sin(Δφ/2)*Math.sin(Δφ/2) + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)*Math.sin(Δλ/2);
+  const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function isNightMode() {
+  const now = new Date();
+  const h = now.getHours();
+  return (h >= 18 || h < 6);
+}
+
+function toggleDarkMode() {
+  if (isNightMode()) document.body.classList.add('dark-mode');
+  else document.body.classList.remove('dark-mode');
+}
+
+function addToActivityLog(msg) {
+  const entry = new Date().toLocaleString() + ': ' + msg;
+  activityLog.unshift(entry);
+  if (activityLog.length > 100) activityLog.pop();
+  localStorage.setItem('activityLog', JSON.stringify(activityLog));
+  updateActivityLogDisplay();
+}
+
+function updateActivityLogDisplay(){
+  const el = document.getElementById('activity-log');
+  el.innerHTML = '';
+  activityLog.forEach(item => {
+    const li = document.createElement('li'); li.textContent = item; el.appendChild(li);
+  });
+}
+
+function addToNotificationLog(msg){
+  const ul = document.getElementById('log-list');
+  const li = document.createElement('li'); li.textContent = new Date().toLocaleString() + ': ' + msg; ul.prepend(li);
+}
+
+function sendNotification(message){
+  try {
+    const now = Date.now();
+    // rate-limit identical messages (30s)
+    if (lastNotifTimestamps[message] && now - lastNotifTimestamps[message] < 30000) return;
+    lastNotifTimestamps[message] = now;
+    if (Notification.permission === 'granted'){
+      new Notification('Peringatan Keamanan', { body: message });
+      addToNotificationLog(message);
+      addToActivityLog('Notifikasi dikirim: ' + message);
+    } else {
+      // fallback: show modal alert (only once per message)
+      alert(message);
+      addToActivityLog('Alert tampil (permission not granted): ' + message);
+    }
+  } catch(e){
+    console.error('sendNotification error', e);
+  }
+}
+
+function requestNotificationPermission(){
+  if (!('Notification' in window)) { alert('Browser tidak mendukung notifikasi.'); return; }
+  Notification.requestPermission().then(p => {
+    if (p === 'granted') { alert('Izin notifikasi diberikan.'); addToActivityLog('Izin notifikasi diberikan.'); }
+    else { alert('Izin notifikasi ditolak atau tidak diberikan. Notifikasi akan tampil sebagai alert.'); addToActivityLog('Izin notifikasi tidak diberikan.'); }
+  });
+}
+
+function updateSensorStatus(id, safe){
+  const el = document.getElementById(id + '-status');
+  el.textContent = safe ? 'Aman' : 'Tidak Aman';
+  el.className = 'sensor-status ' + (safe ? 'safe' : 'danger');
+}
+
+function evaluateLogic(){
+  const P = document.getElementById('P').checked; // pintu terkunci
+  const J = document.getElementById('J').checked; // jendela tertutup
+  const S = document.getElementById('S').checked; // tidak ada asap
+  const motion = document.getElementById('motion').checked; // sensor gerak
+  const M = isNightMode();
+  const distanceText = document.getElementById('distance').textContent;
+  const L = homeLocation && distanceText !== '-' && parseFloat(distanceText) > radius;
+
+  updateSensorStatus('P', P);
+  updateSensorStatus('J', J);
+  updateSensorStatus('S', S);
+  updateSensorStatus('motion', motion);
+
+  const A = P && J && S; // rumah aman
+
+  const statusText = document.getElementById('status-text');
+  const statusDetail = document.getElementById('status-detail');
+  const statusCircle = document.getElementById('status-circle');
+
+  if (A){
+    statusText.textContent = 'Aman';
+    statusDetail.textContent = 'Semua sensor menunjukkan kondisi aman.';
+    statusCircle.style.stroke = '#4CAF50';
+    statusCircle.style.strokeDashoffset = '0';
+  } else {
+    statusText.textContent = 'Tidak Aman';
+    statusDetail.textContent = 'Periksa sensor: pintu/jendela/asap.';
+    statusCircle.style.stroke = '#f44336';
+    statusCircle.style.strokeDashoffset = '300';
+  }
+
+  // rules
+  if (L && !A) sendNotification('Rumah tidak aman! Anda meninggalkan area rumah.');
+  if (M && !P) sendNotification('Pintu harus dikunci pada malam hari!');
+  if (M && L) sendNotification('Risiko tinggi! Anda meninggalkan rumah pada malam hari.');
+
+  // detail reason for UI
+  let reasons = [];
+  if (!P) reasons.push('pintu belum dikunci');
+  if (!J) reasons.push('jendela belum tertutup');
+  if (!S) reasons.push('terdeteksi asap');
+  if (L) reasons.push('pengguna berada di luar radius');
+  if (M) reasons.push('mode malam aktif');
+  statusDetail.textContent = reasons.length ? 'Masalah terdeteksi: ' + reasons.join(', ') : 'Semua aman.';
+}
+
+function updateDistance(userLat, userLng){
+  const distEl = document.getElementById('distance');
+  if (!homeLocation){ distEl.textContent = '-'; return; }
+  const d = haversineDistance(userLat, userLng, homeLocation.lat, homeLocation.lng);
+  distEl.textContent = d.toFixed(2);
+}
+
+function setHomeLocation(){
+  if (!navigator.geolocation){ alert('Geolocation tidak didukung.'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    homeLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    localStorage.setItem('homeLocation', JSON.stringify(homeLocation));
+    document.getElementById('home-lat').textContent = homeLocation.lat.toFixed(6);
+    document.getElementById('home-lng').textContent = homeLocation.lng.toFixed(6);
+    addToActivityLog('Lokasi rumah diset.');
+    alert('Lokasi rumah berhasil disimpan.');
+    evaluateLogic();
+  }, err => { alert('Gagal mengambil lokasi rumah: ' + err.message); });
+}
+
+function clearHomeLocation(){
+  homeLocation = null; localStorage.removeItem('homeLocation');
+  document.getElementById('home-lat').textContent = '-'; document.getElementById('home-lng').textContent = '-';
+  addToActivityLog('Lokasi rumah dihapus.');
+}
+
+function saveRadius(){
+  const val = parseInt(document.getElementById('radius-input').value);
+  if (!isNaN(val) && val > 0){ radius = val; localStorage.setItem('radius', radius); addToActivityLog('Radius disimpan: ' + radius + ' m'); }
+}
+
+function startWatch(){
+  if (!navigator.geolocation){ alert('Geolocation tidak tersedia.'); return; }
+  if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+  watchId = navigator.geolocation.watchPosition(pos => {
+    const lat = pos.coords.latitude; const lng = pos.coords.longitude;
+    document.getElementById('user-lat').textContent = lat.toFixed(6);
+    document.getElementById('user-lng').textContent = lng.toFixed(6);
+    updateDistance(lat, lng);
+    evaluateLogic();
+    toggleDarkMode();
+  }, err => { console.warn('watchPosition error', err); }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 });
+}
+
+// init
+window.addEventListener('load', () => {
+  // load saved state
+  const savedHome = localStorage.getItem('homeLocation');
+  if (savedHome) { homeLocation = JSON.parse(savedHome); document.getElementById('home-lat').textContent = homeLocation.lat.toFixed(6); document.getElementById('home-lng').textContent = homeLocation.lng.toFixed(6); }
+  const savedRadius = localStorage.getItem('radius'); if (savedRadius) { radius = parseInt(savedRadius); document.getElementById('radius-input').value = radius; }
+  const savedActivity = localStorage.getItem('activityLog'); if (savedActivity) activityLog = JSON.parse(savedActivity);
+  updateActivityLogDisplay();
+  // wire buttons
+  document.getElementById('set-home-btn').addEventListener('click', setHomeLocation);
+  document.getElementById('clear-home-btn').addEventListener('click', clearHomeLocation);
+  document.getElementById('save-radius-btn').addEventListener('click', saveRadius);
+  document.getElementById('request-notification-btn').addEventListener('click', requestNotificationPermission);
+  document.getElementById('test-notification-btn').addEventListener('click', () => sendNotification('Tes notifikasi: sistem bekerja.'));
+  // sensor change handlers
+  ['P','J','S','motion'].forEach(id => document.getElementById(id).addEventListener('change', evaluateLogic));
+  // start watching location and simulation
+  startWatch();
+  // ask for notifications proactively (but user can decline)
+  // do not force; show a gentle prompt
+  if (Notification && Notification.permission === 'default'){
+    // gentle prompt (non-blocking)
+    setTimeout(()=>{
+      if (confirm('Izinkan notifikasi untuk menerima peringatan keamanan? (Anda bisa menolak)')) requestNotificationPermission();
+    },1200);
+  }
+  // initial evaluate
+  evaluateLogic();
+});
+</script></body>
 </html>
