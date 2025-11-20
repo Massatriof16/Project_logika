@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Sistem Keamanan Rumah</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Simulasi Sistem Keamanan Rumah</h1>
+            <p>Berbasis Logika Proposisi</p>
+        </header>
+        
+        <div class="card-grid">
+            <!-- Input Sensors -->
+            <div class="card">
+                <h2>Input Sensor</h2>
+                <div class="sensor-list">
+                    <label class="sensor-item">
+                        <input type="checkbox" id="P" onchange="updateSimulation()">
+                        <span>Sensor gerak aktif (P)</span>
+                    </label>
+                    <label class="sensor-item">
+                        <input type="checkbox" id="Q" onchange="updateSimulation()">
+                        <span>Pintu terbuka (Q)</span>
+                    </label>
+                    <label class="sensor-item">
+                        <input type="checkbox" id="W" onchange="updateSimulation()">
+                        <span>Jendela terbuka (W)</span>
+                    </label>
+                    <label class="sensor-item">
+                        <input type="checkbox" id="A" onchange="updateSimulation()">
+                        <span>Asap / kebakaran terdeteksi (A)</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Mode Malam -->
+            <div class="card">
+                <h2>Mode Waktu</h2>
+                <div class="mode-display">
+                    <span id="mode-text">Siang</span>
+                    <div class="time-display">Waktu: <span id="current-time">00:00</span></div>
+                </div>
+            </div>
+            
+            <!-- Output -->
+            <div class="card output-card">
+                <h2>Output Sistem</h2>
+                <div class="output-list">
+                    <div class="output-item">
+                        <span>Alarm aktif (R)</span>
+                        <span class="badge" id="R-badge">Tidak Aktif</span>
+                    </div>
+                    <div class="output-item">
+                        <span>Lampu luar menyala (S)</span>
+                        <span class="badge" id="S-badge">Tidak Aktif</span>
+                    </div>
+                    <div class="output-item">
+                        <span>Notifikasi terkirim (T)</span>
+                        <span class="badge" id="T-badge">Tidak Aktif</span>
+                    </div>
+                </div>
+                <div class="explanation">
+                    <h3>Penjelasan:</h3>
+                    <p id="explanation-text">Tidak ada kondisi yang memicu output.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="logic.js"></script>
+</body>
+</html>
