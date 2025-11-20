@@ -13,10 +13,16 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    transition: background 0.5s ease, color 0.5s ease;
+}
+
+body.dark-mode {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: #ecf0f1;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     width: 100%;
 }
 
@@ -37,10 +43,41 @@ header p {
     font-weight: 300;
 }
 
-.card-grid {
+.dashboard {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
+    align-items: start;
+}
+
+.status-ring {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.status-ring:hover {
+    transform: translateY(-5px);
+}
+
+.status-text {
+    margin-top: 15px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+}
+
+#status-circle {
+    transition: stroke-dashoffset 0.5s ease;
 }
 
 .card {
@@ -65,6 +102,34 @@ header p {
     color: white;
 }
 
+.location-info p {
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 10px 5px;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+input[type="number"] {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-left: 10px;
+}
+
 .sensor-list {
     display: flex;
     flex-direction: column;
@@ -74,6 +139,7 @@ header p {
 .sensor-item {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     cursor: pointer;
     padding: 10px;
     border-radius: 10px;
@@ -89,81 +155,59 @@ header p {
     transform: scale(1.2);
 }
 
-.mode-display {
-    text-align: center;
-}
-
-.mode-display #mode-text {
-    font-size: 2rem;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 10px;
-}
-
-.time-display {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.output-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.output-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.output-item span:first-child {
-    font-weight: 400;
-    color: white;
-}
-
-.badge {
-    padding: 5px 15px;
+.sensor-status {
+    padding: 5px 10px;
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
-.badge.active {
+.sensor-status.safe {
     background: #4CAF50;
     color: white;
 }
 
-.badge.inactive {
+.sensor-status.danger {
     background: #f44336;
     color: white;
 }
 
-.explanation {
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    padding-top: 15px;
+.notification-log ul {
+    list-style: none;
+    padding: 0;
 }
 
-.explanation h3 {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    color: white;
-}
-
-.explanation p {
-    font-size: 1rem;
+.notification-log li {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
     color: rgba(255, 255, 255, 0.9);
-    line-height: 1.5;
+}
+
+#activity-log {
+    list-style: none;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#activity-log li {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 @media (max-width: 768px) {
-    .card-grid {
+    .dashboard {
         grid-template-columns: 1fr;
+    }
+    
+    .status-ring {
+        grid-column: span 1;
     }
     
     header h1 {

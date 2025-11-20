@@ -13,63 +13,73 @@
     <div class="container">
         <header>
             <h1>Simulasi Sistem Keamanan Rumah</h1>
-            <p>Berbasis Logika Proposisi</p>
+            <p>Berbasis Logika Proposisi + Geofencing GPS</p>
         </header>
         
-        <div class="card-grid">
-            <!-- Input Sensors -->
+        <div class="dashboard">
+            <!-- Status Ring -->
+            <div class="status-ring">
+                <svg width="200" height="200">
+                    <circle cx="100" cy="100" r="90" stroke="#ddd" stroke-width="10" fill="none" />
+                    <circle cx="100" cy="100" r="90" stroke="#4CAF50" stroke-width="10" fill="none" stroke-dasharray="565" stroke-dashoffset="0" id="status-circle" />
+                </svg>
+                <div class="status-text" id="status-text">Aman</div>
+            </div>
+            
+            <!-- Panel Lokasi -->
             <div class="card">
-                <h2>Input Sensor</h2>
+                <h2>Lokasi & Geofencing</h2>
+                <div class="location-info">
+                    <p>Posisi Anda: <span id="user-lat">Memuat...</span>, <span id="user-lng">Memuat...</span></p>
+                    <p>Lokasi Rumah: <span id="home-lat">-</span>, <span id="home-lng">-</span></p>
+                    <p>Jarak: <span id="distance">-</span> meter</p>
+                    <button id="set-home-btn">Set Lokasi Rumah</button>
+                    <label>Radius Aman (meter): <input type="number" id="radius-input" min="50" max="100" value="50"></label>
+                    <button id="save-radius-btn">Simpan Radius</button>
+                </div>
+            </div>
+            
+            <!-- Panel Sensor -->
+            <div class="card">
+                <h2>Sensor Virtual</h2>
                 <div class="sensor-list">
                     <label class="sensor-item">
                         <input type="checkbox" id="P" onchange="updateSimulation()">
-                        <span>Sensor gerak aktif (P)</span>
+                        <span>Pintu terkunci (P)</span>
+                        <span class="sensor-status" id="P-status">Tidak Aman</span>
                     </label>
                     <label class="sensor-item">
-                        <input type="checkbox" id="Q" onchange="updateSimulation()">
-                        <span>Pintu terbuka (Q)</span>
+                        <input type="checkbox" id="J" onchange="updateSimulation()">
+                        <span>Jendela tertutup (J)</span>
+                        <span class="sensor-status" id="J-status">Tidak Aman</span>
                     </label>
                     <label class="sensor-item">
-                        <input type="checkbox" id="W" onchange="updateSimulation()">
-                        <span>Jendela terbuka (W)</span>
+                        <input type="checkbox" id="S" onchange="updateSimulation()">
+                        <span>Tidak ada asap (S)</span>
+                        <span class="sensor-status" id="S-status">Tidak Aman</span>
                     </label>
                     <label class="sensor-item">
-                        <input type="checkbox" id="A" onchange="updateSimulation()">
-                        <span>Asap / kebakaran terdeteksi (A)</span>
+                        <input type="checkbox" id="motion" onchange="updateSimulation()">
+                        <span>Sensor gerak (opsional)</span>
+                        <span class="sensor-status" id="motion-status">Tidak Aman</span>
                     </label>
                 </div>
             </div>
             
-            <!-- Mode Malam -->
+            <!-- Panel Notifikasi -->
             <div class="card">
-                <h2>Mode Waktu</h2>
-                <div class="mode-display">
-                    <span id="mode-text">Siang</span>
-                    <div class="time-display">Waktu: <span id="current-time">00:00</span></div>
+                <h2>Notifikasi</h2>
+                <button id="request-notification-btn">Izinkan Notifikasi</button>
+                <div class="notification-log" id="notification-log">
+                    <p>Log Notifikasi:</p>
+                    <ul id="log-list"></ul>
                 </div>
             </div>
             
-            <!-- Output -->
-            <div class="card output-card">
-                <h2>Output Sistem</h2>
-                <div class="output-list">
-                    <div class="output-item">
-                        <span>Alarm aktif (R)</span>
-                        <span class="badge" id="R-badge">Tidak Aktif</span>
-                    </div>
-                    <div class="output-item">
-                        <span>Lampu luar menyala (S)</span>
-                        <span class="badge" id="S-badge">Tidak Aktif</span>
-                    </div>
-                    <div class="output-item">
-                        <span>Notifikasi terkirim (T)</span>
-                        <span class="badge" id="T-badge">Tidak Aktif</span>
-                    </div>
-                </div>
-                <div class="explanation">
-                    <h3>Penjelasan:</h3>
-                    <p id="explanation-text">Tidak ada kondisi yang memicu output.</p>
-                </div>
+            <!-- Log Aktivitas -->
+            <div class="card">
+                <h2>Log Aktivitas</h2>
+                <ul id="activity-log"></ul>
             </div>
         </div>
     </div>
