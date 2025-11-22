@@ -248,25 +248,6 @@ function evaluateLogic(){
   if (M && L) sendNotification('Risiko tinggi! Anda meninggalkan rumah pada malam hari.');
 }
 
-  if (L && score < 80) sendNotification('Rumah tidak aman! Anda meninggalkan area rumah.');
-  if (M && !P) sendNotification('Pintu harus dikunci pada malam hari!');
-  if (M && L) sendNotification('Risiko tinggi! Anda meninggalkan rumah pada malam hari.');
-}
-
-  // rules
-  if (L && !A) sendNotification('Rumah tidak aman! Anda meninggalkan area rumah.');
-  if (M && !P) sendNotification('Pintu harus dikunci pada malam hari!');
-  if (M && L) sendNotification('Risiko tinggi! Anda meninggalkan rumah pada malam hari.');
-
-  // detail reason for UI
-  let reasons = [];
-  if (!P) reasons.push('pintu belum dikunci');
-  if (!J) reasons.push('jendela belum tertutup');
-  if (!S) reasons.push('terdeteksi asap');
-  if (L) reasons.push('pengguna berada di luar radius');
-  if (M) reasons.push('mode malam aktif');
-  statusDetail.textContent = reasons.length ? 'Masalah terdeteksi: ' + reasons.join(', ') : 'Semua aman.';
-}
 
 function updateDistance(userLat, userLng){
   const distEl = document.getElementById('distance');
