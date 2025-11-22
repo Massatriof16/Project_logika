@@ -183,18 +183,25 @@ function evaluateLogic(){
   const motion = document.getElementById('motion').checked;
   const M = isNightMode();
   const distanceText = document.getElementById('distance').textContent;
-  const L = homeLocation && distanceText !== '-' && parseFloat(distanceText) > radius;
+  // treat L = true only when homeLocation exists and user distance > radius
+  const L = (homeLocation && distanceText !== '-' && parseFloat(distanceText) > radius);
 
   updateSensorStatus('P', P);
   updateSensorStatus('J', J);
   updateSensorStatus('S', S);
   updateSensorStatus('motion', motion);
 
-  let score = 0;
-  if (P) score += 25;
-  if (J) score += 25;
-  if (S) score += 25;
-  if (!L) score += 25;
+  // breakdown contributions (for debugging & explanation)
+  const contributions = {
+    P: P ? 25 : 0,
+    J: J ? 25 : 0,
+    S: S ? 25 : 0,
+    Location: (!homeLocation) ? 25 : (!L ? 25 : 0) // if home not set -> assume inside (give credit). else give 25 if inside
+  };
+
+  let score = contributions.P + contributions.J + contributions.S + contributions.Location;
+
+  // penalties
   if (M && !P) score -= 20;
   if (M && L) score -= 30;
   if (score < 0) score = 0;
@@ -220,12 +227,46 @@ function evaluateLogic(){
     statusCircle.style.strokeDashoffset = '300';
   }
 
+  // show detailed breakdown so user tahu kenapa nilainya seperti itu
+  const breakdown = [];
+  breakdown.push(`Pintu (P): ${contributions.P}%`);
+  breakdown.push(`Jendela (J): ${contributions.J}%`);
+  breakdown.push(`Asap (S): ${contributions.S}%`);
+  if (!homeLocation) breakdown.push(`Lokasi: belum diset → dianggap DI DALAM (25%)`);
+  else breakdown.push(`Lokasi: ${L ? 'DI LUAR (0%)' : 'DI DALAM (25%)'}`);
+
+  // penalties info
+  const penalties = [];
+  if (M && !P) penalties.push('-20% (malam & pintu terbuka)');
+  if (M && L) penalties.push('-30% (malam & keluar radius)');
+
+  statusDetail.textContent = (breakdown.join(' | ') + (penalties.length ? ' | Penalti: ' + penalties.join(', ') : ''));
+
+  // notifications (rate-limited inside sendNotification)
   if (L && score < 80) sendNotification('Rumah tidak aman! Anda meninggalkan area rumah.');
   if (M && !P) sendNotification('Pintu harus dikunci pada malam hari!');
   if (M && L) sendNotification('Risiko tinggi! Anda meninggalkan rumah pada malam hari.');
 }
 
+  if (L && score < 80) sendNotification('Rumah tidak aman! Anda meninggalkan area rumah.');
+  if (M && !P) sendNotification('Pintu harus dikunci pada malam hari!');
+  if (M && L) sendNotification('Risiko tinggi! Anda meninggalkan rumah pada malam hari.');
+}
 
+  // rules
+  if (L && !A) sendNotification('Rumah tidak aman! Anda meninggalkan area rumah.');
+  if (M && !P) sendNotification('Pintu harus dikunci pada malam hari!');
+  if (M && L) sendNotification('Risiko tinggi! Anda meninggalkan rumah pada malam hari.');
+
+  // detail reason for UI
+  let reasons = [];
+  if (!P) reasons.push('pintu belum dikunci');
+  if (!J) reasons.push('jendela belum tertutup');
+  if (!S) reasons.push('terdeteksi asap');
+  if (L) reasons.push('pengguna berada di luar radius');
+  if (M) reasons.push('mode malam aktif');
+  statusDetail.textContent = reasons.length ? 'Masalah terdeteksi: ' + reasons.join(', ') : 'Semua aman.';
+}
 
 function updateDistance(userLat, userLng){
   const distEl = document.getElementById('distance');
