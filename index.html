@@ -177,10 +177,10 @@ function updateSensorStatus(id, safe){
 }
 
 function evaluateLogic(){
-  const P = document.getElementById('P').checked; // pintu terkunci
-  const J = document.getElementById('J').checked; // jendela tertutup
-  const S = document.getElementById('S').checked; // tidak ada asap
-  const motion = document.getElementById('motion').checked; // sensor gerak
+  const P = document.getElementById('P').checked;
+  const J = document.getElementById('J').checked;
+  const S = document.getElementById('S').checked;
+  const motion = document.getElementById('motion').checked;
   const M = isNightMode();
   const distanceText = document.getElementById('distance').textContent;
   const L = homeLocation && distanceText !== '-' && parseFloat(distanceText) > radius;
@@ -190,23 +190,40 @@ function evaluateLogic(){
   updateSensorStatus('S', S);
   updateSensorStatus('motion', motion);
 
-  const A = P && J && S; // rumah aman
+  let score = 0;
+  if (P) score += 25;
+  if (J) score += 25;
+  if (S) score += 25;
+  if (!L) score += 25;
+  if (M && !P) score -= 20;
+  if (M && L) score -= 30;
+  if (score < 0) score = 0;
+  if (score > 100) score = 100;
 
   const statusText = document.getElementById('status-text');
   const statusDetail = document.getElementById('status-detail');
   const statusCircle = document.getElementById('status-circle');
 
-  if (A){
-    statusText.textContent = 'Aman';
-    statusDetail.textContent = 'Semua sensor menunjukkan kondisi aman.';
+  statusText.textContent = score + "% Aman";
+
+  if (score >= 80) {
+    statusDetail.textContent = "Rumah dalam kondisi aman.";
     statusCircle.style.stroke = '#4CAF50';
     statusCircle.style.strokeDashoffset = '0';
+  } else if (score >= 50) {
+    statusDetail.textContent = "Keamanan cukup, periksa beberapa sensor.";
+    statusCircle.style.stroke = '#FFC107';
+    statusCircle.style.strokeDashoffset = '150';
   } else {
-    statusText.textContent = 'Tidak Aman';
-    statusDetail.textContent = 'Periksa sensor: pintu/jendela/asap.';
+    statusDetail.textContent = "Bahaya! Banyak sensor tidak aman.";
     statusCircle.style.stroke = '#f44336';
     statusCircle.style.strokeDashoffset = '300';
   }
+
+  if (L && score < 80) sendNotification('Rumah tidak aman! Anda meninggalkan area rumah.');
+  if (M && !P) sendNotification('Pintu harus dikunci pada malam hari!');
+  if (M && L) sendNotification('Risiko tinggi! Anda meninggalkan rumah pada malam hari.');
+}
 
   // rules
   if (L && !A) sendNotification('Rumah tidak aman! Anda meninggalkan area rumah.');
