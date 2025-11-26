@@ -203,8 +203,8 @@ function evaluateLogic(){
   let score = contributions.P + contributions.J + contributions.S + contributions.motion + contributions.Location;
 
   // penalties
-  if (M && !P) score -= 20;
-  if (M && L) score -= 20;
+  if (M && !P) score -= 15;
+  if (M && L) score -= 15;
   if (score < 0) score = 0;
   if (score > 100) score = 100;
 
@@ -233,13 +233,13 @@ function evaluateLogic(){
   breakdown.push(`Pintu (P): ${contributions.P}%`);
   breakdown.push(`Jendela (J): ${contributions.J}%`);
   breakdown.push(`Asap (S): ${contributions.S}%`);
-  if (!homeLocation) breakdown.push(`Lokasi: belum diset → dianggap DI DALAM (25%)`);
-  else breakdown.push(`Lokasi: ${L ? 'DI LUAR (0%)' : 'DI DALAM (25%)'}`);
+  if (!homeLocation) breakdown.push(`Lokasi: belum diset → dianggap DI DALAM (20%)`);
+  else breakdown.push(`Lokasi: ${L ? 'DI LUAR (0%)' : 'DI DALAM (20%)'}`);
 
   // penalties info
   const penalties = [];
   if (M && !P) penalties.push('-20% (malam & pintu terbuka)');
-  if (M && L) penalties.push('-30% (malam & keluar radius)');
+  if (M && L) penalties.push('-20% (malam & keluar radius)');
 
   statusDetail.textContent = (breakdown.join(' | ') + (penalties.length ? ' | Penalti: ' + penalties.join(', ') : ''));
 
