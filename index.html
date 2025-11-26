@@ -200,7 +200,7 @@ function evaluateLogic(){
     Location: (!homeLocation) ? 20 : (!L ? 20 : 0) // if home not set -> assume inside (give credit). else give 20 if inside
   };
 
-  let score = contributions.P + contributions.J + contributions.S + contributions.Location;
+  let score = contributions.P + contributions.J + contributions.S + contributions.motion + contributions.Location;
 
   // penalties
   if (M && !P) score -= 20;
