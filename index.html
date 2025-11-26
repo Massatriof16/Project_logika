@@ -193,17 +193,18 @@ function evaluateLogic(){
 
   // breakdown contributions (for debugging & explanation)
   const contributions = {
-    P: P ? 25 : 0,
-    J: J ? 25 : 0,
-    S: S ? 25 : 0,
-    Location: (!homeLocation) ? 25 : (!L ? 25 : 0) // if home not set -> assume inside (give credit). else give 25 if inside
+    P: P ? 20 : 0,
+    J: J ? 20 : 0,
+    S: S ? 20 : 0,
+    motion: motion ? 20 : 0,
+    Location: (!homeLocation) ? 20 : (!L ? 20 : 0) // if home not set -> assume inside (give credit). else give 20 if inside
   };
 
   let score = contributions.P + contributions.J + contributions.S + contributions.Location;
 
   // penalties
   if (M && !P) score -= 20;
-  if (M && L) score -= 30;
+  if (M && L) score -= 20;
   if (score < 0) score = 0;
   if (score > 100) score = 100;
 
