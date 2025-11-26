@@ -238,8 +238,8 @@ function evaluateLogic(){
 
   // penalties info
   const penalties = [];
-  if (M && !P) penalties.push('-20% (malam & pintu terbuka)');
-  if (M && L) penalties.push('-20% (malam & keluar radius)');
+  if (M && !P) penalties.push('-10% (malam & pintu terbuka)');
+  if (M && L) penalties.push('-10% (malam & keluar radius)');
 
   statusDetail.textContent = (breakdown.join(' | ') + (penalties.length ? ' | Penalti: ' + penalties.join(', ') : ''));
 
